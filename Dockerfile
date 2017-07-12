@@ -27,22 +27,10 @@ COPY openvswitch-2.7.1 /root/openvswitch-2.7.1
 RUN cd /root/openvswitch-2.7.1 && ./configure && make && make install
 ENV PATH=$PATH:/usr/local/share/openvswitch/scripts
 
-
-RUN export uid=1000 gid=1000 && \
-    mkdir -p /home/student && \
-    echo "student:x:${uid}:${gid}:student,,,:/home/student:/bin/bash" >> /etc/passwd && \
-    echo "student:x:${uid}:" >> /etc/group && \
-    echo "student ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/student && \
-    chmod 0440 /etc/sudoers.d/student && \
-    chown ${uid}:${gid} -R /home/student
-
-#Floodlight
-COPY floodlight /home/student/floodlight
-
-#Eclipse
+#Eclipse-install
 COPY eclipse /home/student/eclipse
 
-RUN apt-get -y install adwaita-icon-theme ant ant-optional binfmt-support dbus-x11 default-jdk default-jdk-headless default-jre default-jre-headless eclipse eclipse-jdt eclipse-pde eclipse-platform eclipse-platform-data eclipse-rcp fastjar fontconfig gconf-service gconf-service-backend gconf2 gconf2-common gtk-update-icon-cache hicolor-icon-theme humanity-icon-theme jarwrapper junit junit4 libapache-pom-java \
+RUN apt-get -y install adwaita-icon-theme ant ant-optional binfmt-support dbus-x11 default-jdk default-jdk-headless default-jre default-jre-headless fastjar fontconfig gconf-service gconf-service-backend gconf2 gconf2-common gtk-update-icon-cache hicolor-icon-theme humanity-icon-theme jarwrapper junit junit4 libapache-pom-java \
   libart-2.0-2 libasm-java libasm3-java libasound2 libasound2-data libatk1.0-0 libatk1.0-data libavahi-client3 libavahi-common-data libavahi-common3 libavahi-glib1 libbonobo2-0 libbonobo2-common \
   libbonoboui2-0 libbonoboui2-common libcairo2 libcanberra0 libcglib-java libcommons-beanutils-java libcommons-cli-java libcommons-codec-java libcommons-collections3-java libcommons-compress-java \
   libcommons-dbcp-java libcommons-digester-java libcommons-httpclient-java libcommons-logging-java libcommons-parent-java libcommons-pool-java libcroco3 libcups2 libdatrie1 libdb-java libdb-je-java \
@@ -54,17 +42,39 @@ RUN apt-get -y install adwaita-icon-theme ant ant-optional binfmt-support dbus-x
   libpixman-1-0 libregexp-java librsvg2-2 librsvg2-common libservlet3.1-java libswt-cairo-gtk-3-jni libswt-glx-gtk-3-jni libswt-gnome-gtk-3-jni libswt-gtk-3-java libswt-gtk-3-jni libswt-webkit-gtk-3-jni \
   libtdb1 libthai-data libthai0 libtiff5 libtomcat8-java libvorbis0a libvorbisfile3 libxcb-render0 libxcb-shm0 libxcursor1 sat4j sound-theme-freedesktop ubuntu-mono
 
+#Add student user
+RUN adduser --disabled-password --gecos '' student
+RUN echo student:student | chpasswd
+RUN usermod -a -G sudo student
+RUN echo "student ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/student && chmod 0440 /etc/sudoers.d/student
+
+#Add symlink to start eclipse
+RUN ln -s /home/student/eclipse/eclipse /usr/bin/eclipse
+
+#Floodlight
+COPY floodlight /home/student/floodlight
+RUN apt-get install -y build-essential maven
+RUN mkdir /var/lib/floodlight
+RUN chmod 777 /var/lib/floodlight
+RUN cd /home/student/floodlight && ant eclipse
+
+#Change persmissions for eclipse and floodlight
 RUN cd /home/student && chown -R student .
 RUN cd /home/student && chgrp -R student .
 
-RUN apt-get install -y build-essential maven
+#Wireshark-install
+RUN DEBIAN_FRONTEND=noninteractive apt-get install wireshark -y
 
-USER student
-ENV HOME /home/student
+CMD sudo service ssh start && sudo ovs-ctl start && bash
 
-#CMD ovs-ctl start
 
-#RUN apt-get install -y wireshark
+#RUN export uid=1000 gid=1000 && \
+#    mkdir -p /home/student && \
+#    echo "student:x:${uid}:${gid}:student,,,:/home/student:/bin/bash" >> /etc/passwd && \
+#    echo "student:x:${uid}:" >> /etc/group && \
+#    echo "student ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/student && \
+#    chmod 0440 /etc/sudoers.d/student && \
+#    chown ${uid}:${gid} -R /home/student
 
 
 
