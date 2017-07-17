@@ -47,6 +47,7 @@ RUN adduser --disabled-password --gecos '' student
 RUN echo student:student | chpasswd
 RUN usermod -a -G sudo student
 RUN echo "student ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/student && chmod 0440 /etc/sudoers.d/student
+RUN cp /etc/skel/.bashrc /home/student & cp /etc/skel/.profile /home/student
 
 #Add symlink to start eclipse
 RUN ln -s /home/student/eclipse/eclipse /usr/bin/eclipse
@@ -64,8 +65,13 @@ RUN cd /home/student && chgrp -R student .
 
 #Wireshark-install
 RUN DEBIAN_FRONTEND=noninteractive apt-get install wireshark -y
+RUN groupadd wireshark && usermod -a -G wireshark student && chgrp wireshark /usr/bin/dumpcap && chmod 750 /usr/bin/dumpcap && setcap cap_net_raw,cap_net_admin=eip /usr/bin/dumpcap
 
-CMD sudo service ssh start && sudo ovs-ctl start && bash
+#Install text editors
+RUN apt-get install gedit nano -y
+
+#RUN sshd and start OVS 
+CMD service ssh start && ovs-ctl start && bash
 
 
 #RUN export uid=1000 gid=1000 && \
