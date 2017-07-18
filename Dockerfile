@@ -59,6 +59,13 @@ RUN mkdir /var/lib/floodlight
 RUN chmod 777 /var/lib/floodlight
 RUN cd /home/student/floodlight && ant eclipse
 
+#Apache2 install
+RUN apt-get -y install apache2
+
+#Floodlight WEB-GUI
+RUN rm /var/www/html/index.html
+COPY floodlight-webui/ /var/www/html/
+
 #Change persmissions for eclipse and floodlight
 RUN cd /home/student && chown -R student .
 RUN cd /home/student && chgrp -R student .
@@ -71,7 +78,7 @@ RUN groupadd wireshark && usermod -a -G wireshark student && chgrp wireshark /us
 RUN apt-get install gedit nano -y
 
 #RUN sshd and start OVS 
-CMD service ssh start && ovs-ctl start && bash
+CMD service ssh start && service apache2 start && ovs-ctl start && bash
 
 
 #RUN export uid=1000 gid=1000 && \
