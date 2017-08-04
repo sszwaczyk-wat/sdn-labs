@@ -77,6 +77,12 @@ RUN groupadd wireshark && usermod -a -G wireshark student && chgrp wireshark /us
 #Install text editors
 RUN apt-get install gedit nano -y
 
+#SET X11UseLocalhost=no
+RUN echo 'X11UseLocalhost=no' >> /etc/ssh/sshd_config
+
+#SET Xauthority for root user for correct authentication for X11 forwarding
+RUN echo 'export XAUTHORITY=/home/student/.Xauthority' >> /etc/profile 
+
 #RUN sshd and start OVS 
 CMD service ssh start && service apache2 start && ovs-ctl start && bash
 
