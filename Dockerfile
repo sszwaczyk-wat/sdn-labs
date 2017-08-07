@@ -83,6 +83,9 @@ RUN echo 'X11UseLocalhost=no' >> /etc/ssh/sshd_config
 #SET Xauthority for root user for correct authentication for X11 forwarding
 RUN echo 'export XAUTHORITY=/home/student/.Xauthority' >> /etc/profile 
 
+#Install CURL
+RUN apt-get install -y curl
+
 #RUN sshd and start OVS 
 CMD service ssh start && service apache2 start && ovs-ctl start && bash
 

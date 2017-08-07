@@ -3,3 +3,5 @@ openvswitch-2.7.1
 floodlight
 eclipse
 floodlight-webui
+*.png
+*.xml
