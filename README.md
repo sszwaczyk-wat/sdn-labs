@@ -4,7 +4,7 @@ A Docker container for Software Defined Networks (SDN) labs in Military Universi
 
 ## Usage
 
-In order to facilitate the use of this image, scripts are provided to run, attach, and stop the container. The scripts are available through the github repository (https://github.com/sszwaczyk/docker-snd-labs.git) to get execute the command:
+In order to facilitate the use of this image, scripts are provided to run, attach, and stop the container. The scripts are available through the github repository (https://github.com/sszwaczyk/docker-sdn-labs.git) to get execute the command:
 
 ``` git clone https://github.com/sszwaczyk/docker-sdn-labs.git```
 
@@ -15,7 +15,7 @@ Image consists of:
 4. Floodilght WEB GUI
 5. Eclipse IDE
 
-
+You can play with container using:
 1. Run container:
 ```./run.sh```
 or
